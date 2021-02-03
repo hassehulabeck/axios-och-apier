@@ -1,19 +1,43 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <rate-list :ratedata="ratedata" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from "axios";
+import RateList from "./components/RateList.vue";
 
 export default {
-  name: 'App',
+  name: "App",
+  data() {
+    return {
+      url: "https://api.exchangerddatesapi.io/latest?base=SEK",
+      ratedata: {
+        rates: null,
+        baseRate: null,
+        date: null,
+        error: null,
+      },
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    RateList,
+  },
+  mounted() {
+    axios
+      .get(this.url)
+      .then((response) => {
+        this.ratedata.rates = response.data.rates;
+        this.ratedata.baseRate = response.data.base;
+        this.ratedata.date = response.data.date;
+      })
+      .catch((error) => {
+        console.error("Fel: " + error);
+        this.ratedata.error = "Ojdå, tokigt.";
+      });
+  },
+};
 </script>
 
 <style>
